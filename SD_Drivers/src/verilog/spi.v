@@ -139,9 +139,19 @@ always @(posedge clk or negedge rst_n) begin
       if (cnt_clk_div == (spi_clk_div>>1-1)) begin
          spi_clk                       <= ~spi_clk;
          data_read[3'd7-cnt_bit]       <= spi_miso;
+         if ((CPAH == 1'b1) && (spi_clk == 1'b0) ||(CPAH == 1'b0) && (spi_clk == 1'b1)) begin
+            spi_mosi                   <= data_write[3'd7-cnt_bit];
+         end else begin
+            spi_mosi                   <= spi_mosi;
+         end
       end else begin
          if (cnt_clk_div == (spi_clk_div-1)) begin
-            spi_mosi                   <= data_write[3'd7-cnt_bit];
+            if ((CPAH == 1'b1) && (spi_clk == 1'b0) ||(CPAH == 1'b0) && (spi_clk == 1'b1)) begin
+               spi_mosi                <= data_write[3'd7-cnt_bit];
+            end else begin
+               spi_mosi                <= spi_mosi;
+            end
+            spi_clk                    <= ~spi_clk;
             cnt_bit                    <= cnt_bit + 1'b1;
          end else begin
             spi_clk                    <= spi_clk;
@@ -153,10 +163,20 @@ always @(posedge clk or negedge rst_n) begin
       write_busy                       <= 1'b1;
       if (cnt_clk_div == (spi_clk_div>>1)-1) begin
          spi_clk                       <= ~spi_clk;
+         if ((CPAH == 1'b1) && (spi_clk == 1'b0) ||(CPAH == 1'b0) && (spi_clk == 1'b1)) begin
+            spi_mosi                   <= data_write[3'd7-cnt_bit];
+         end else begin
+            spi_mosi                   <= spi_mosi;
+         end
       end else begin
          if (cnt_clk_div == (spi_clk_div-1)) begin
-            spi_mosi                   <= data_write[3'd7 - cnt_bit];
+            spi_clk                    <= ~spi_clk;
             cnt_bit                    <= cnt_bit + 1'b1;
+            if ((CPAH == 1'b1) && (spi_clk == 1'b0) ||(CPAH == 1'b0) && (spi_clk == 1'b1)) begin
+               spi_mosi                <= data_write[3'd7-cnt_bit];
+            end else begin
+               spi_mosi                <= spi_mosi;
+            end
          end else begin
             spi_clk                    <= spi_clk;
          end

@@ -55,8 +55,23 @@ always #5  clk = ! clk ;
 initial begin
     clk = 1'b0;
     rst_n = 1'b0;
+    write_en = 1'b0;
+    read_en = 1'b0;
+    spi_clk_div = 4'd6;
+    data_write = 8'hf4;
     #100
     rst_n = 1'b1;
+    #100
+    write_en = 1'b1;
+    #10
+    write_en = 1'b0;
+    wait(write_busy == 1'b0);
+    #100
+    read_en  = 1'b1;
+    #10
+    read_en  = 1'b0;
+    #1000
+    $finish();
 end
 
 initial begin
